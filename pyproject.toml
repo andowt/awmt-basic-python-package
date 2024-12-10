@@ -9,6 +9,8 @@ packages = [{include = "AWMT_BasicPythonPackage"}]
 [tool.poetry.dependencies]
 python = "^3.7"
 
+[tool.poetry.extras]
+tests = ["pytest"]
 
 [build-system]
 requires = ["poetry-core"]
