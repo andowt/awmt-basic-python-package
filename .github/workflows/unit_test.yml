@@ -1,0 +1,33 @@
+name: unit_test
+
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'  # You can change the version as needed
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies using Poetry
+        run: |
+          poetry install  --with dev
+
+      - name: Run pytest
+        run: |
+          poetry run pytest --maxfail=1 --disable-warnings -q  # Run pytest using Poetry's virtualenv
