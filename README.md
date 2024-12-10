@@ -21,5 +21,52 @@ Pytest has been chosen for unit testing based on its scalability and flexability
 
 pytest can be installed using
 
+```
 pip install pytest
+```
+
+## Uploading to PyPI
+Install twine using
+
+```
+pip install twine
+```
+
+Run the command
+
+```
+poetry build
+```
+
+Test upload to PyPI
+
+```
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+```
+
+
+Test install from PyPI
+
+```
+pip install -i https://test.pypi.org/simple/ AWMT_BasicPythonPackage
+```
+
+Full Upload to PyPI
+
+```
+twine upload dist/*
+```
+
+View Project
+
+```
+https://pypi.org/project/<package_name>
+```
+
+Full install
+
+```
+pip install <package_name>
+```
+
 
