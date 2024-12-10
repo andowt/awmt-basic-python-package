@@ -1,7 +1,5 @@
 name: unit_test
 
-name: Run Tests
-
 on:
   pull_request:
     branches:
