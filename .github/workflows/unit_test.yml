@@ -30,7 +30,6 @@ jobs:
       - name: Run pytest
         run: |
           poetry run pytest --maxfail=1 --disable-warnings -q > test-results.txt  # Run pytest using Poetry's virtualenv
-          echo "exit_code=$?" >> $GITHUB_ENV  # Capture exit code and set it as an environment variable
         continue-on-error: true  # Upload even if pytest fails
 
       - name: Upload Test Results
@@ -39,9 +38,13 @@ jobs:
           name: test-results
           path: test-results.txt
 
-      - name: Set status based on test result
-        if: ${{ env.exit_code != 0 }}  # Only run this if pytest failed (exit code is non-zero)
+      - name: Set test status
         run: |
-          echo "Tests failed, setting status to failed"
-          exit 1  # Forces the workflow to fail and block the PR
+          if [[ -f test-results.txt ]]; then
+            cat test-results.txt
+            if grep -q "FAILED" test-results.txt; then
+              echo "Test failed"
+              exit 1
+            fi
+          fi
        
