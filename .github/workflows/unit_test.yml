@@ -30,7 +30,7 @@ jobs:
       - name: Run pytest
         run: |
           poetry run pytest --maxfail=1 --disable-warnings -q > test-results.txt  # Run pytest using Poetry's virtualenv
-          continue-on-error: true  # Upload even if pytest fails
+        continue-on-error: true  # Upload even if pytest fails
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
