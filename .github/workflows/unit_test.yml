@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  test:
+  run-unit-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,10 +30,11 @@ jobs:
       - name: Run pytest
         run: |
           poetry run pytest --maxfail=1 --disable-warnings -q > test-results.txt  # Run pytest using Poetry's virtualenv
+          continue-on-error: true  # Upload even if pytest fails
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: test-results.txt
-        continue-on-error: true  # Upload even if pytest fails
+       
