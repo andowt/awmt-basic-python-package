@@ -7,18 +7,16 @@ on:
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  test:
+
+  checkout:
+    uses: ./.github/workflows/checkout.yml
+    with:
+      python_version: '3.12'
+
+  install:
     runs-on: ubuntu-latest
-
+    needs: checkout
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'  # You can change the version as needed
-
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
@@ -27,6 +25,10 @@ jobs:
         run: |
           poetry install  --with dev
 
+  run:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
       - name: Run pytest
         run: |
           poetry run pytest --maxfail=1 --disable-warnings -q  # Run pytest using Poetry's virtualenv

@@ -17,32 +17,19 @@ permissions:
   contents: write
 
 jobs:
-  versioning:
+
+  checkout:
+    uses: ./.github/workflows/checkout.yml
+    with:
+      python_version: '3.12' 
+
+  version:
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -  # Install Poetry
-          
-      - name: Install PIP Requirements
+    needs: checkout
+    steps:  
+      - name: Install bump2version
         run: |
           pip install bump2version
-          pip install twine
-      
-      - name: Set Git user identity (repository-scoped)
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions Bot"
-
       - name: Bump version
         id: bump_version
         run: |
@@ -53,9 +40,25 @@ jobs:
           bump2version $version_type  # This will bump patch, minor, or major based on the input
           git push --follow-tags
 
+  build:
+    runs-on: ubuntu-latest
+    needs: version
+    steps:  
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -  # Install Poetry
+
       - name: Build the package
         run: |
           poetry build
+
+  upload:
+      runs-on: ubuntu-latest
+      needs: build
+      steps:  
+      - name: Install Twine
+        run: |
+          pip install twine
 
       - name: Publish to PyPI
         run: |

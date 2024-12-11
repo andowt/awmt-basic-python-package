@@ -1,0 +1,27 @@
+# .github/workflows/checkout.yml
+name: Checkout Code
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        description: 'Python version'
+        required: true
+        default: '3.12'
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Set Git user identity (repository-scoped)
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions Bot"
