@@ -12,6 +12,7 @@ jobs:
     uses: ./.github/workflows/checkout.yml
     with:
       python_version: '3.12'
+    type: workflow
 
   install:
     runs-on: ubuntu-latest
