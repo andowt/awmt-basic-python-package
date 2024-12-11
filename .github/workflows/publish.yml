@@ -34,6 +34,11 @@ jobs:
         run: |
           pip install bump2version
           pip install twine
+      
+      - name: Set Git user identity (repository-scoped)
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions Bot"
 
       - name: Bump version
         id: bump_version
