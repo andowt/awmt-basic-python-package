@@ -33,8 +33,14 @@ jobs:
         continue-on-error: true  # Upload even if pytest fails
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: test-results.txt
+
+      - name: Set status based on test result
+        if: ${{ failure() }}  # This will run only if pytest fails
+        run: |
+          echo "Tests failed, setting status to failed"
+          exit 1  # This forces the workflow to fail and block the PR
        
