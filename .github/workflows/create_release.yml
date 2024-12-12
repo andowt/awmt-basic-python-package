@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   create_release:
@@ -68,13 +69,8 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
-          commit-message: "[create-pull-request] automated change"
-          committer: GitHub <noreply@github.com>
-          author: GitHub Actions Bot <github-actions@github.com>
-          signoff: false
-          branch: release
-          delete-branch: false
-          base: main
-          title: Release Version
-          body: This PR includes the bumped version and tag.
+          base: main  # Target branch is main
+          branch: release  # Source branch is release
+          title: "Merge release into main"
+          body: "This pull request merges the release branch into the main branch. This will trigger the deploy workflow"
           draft: false
