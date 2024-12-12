@@ -61,7 +61,7 @@ jobs:
           # Capture the bumped version from .bumpversion.cfg
           bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
           echo "Bumped version is: $bumped_version"
-          echo "::set-output name=version::$bumped_version"
+          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
@@ -69,6 +69,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
           base: main  # Target branch is main
           branch: release  # Source branch is release
-          title: "Release - ${{ steps.bump_version.outputs.version }}"
-          body: "This pull request merges the release branch into the main branch. This will trigger the deploy workflow"
+          title: "Release - ${{ env.VERSION }}"  # Use the environment variable here
+          body: "This pull request merges the release branch into the main branch.\nThis will trigger the deploy workflow"
           draft: false
