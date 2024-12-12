@@ -25,19 +25,31 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install PIP Requirements
+      - name: Download build artifacts from GitHub Release
         run: |
-          pip install twine
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
+          gh release download "$RELEASE_TAG" --pattern "dist/*" --dir dist/
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}  # Ensure this matches the name from build.yml
-          path: dist/  # Path where the artifact will be saved locally
+      #- name: Install PIP Requirements
+      #  run: |
+      #    pip install twine
 
-      - name: Publish to PyPI
+      #- name: Publish to PyPI
+      #  run: |
+      #    twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Rename and Publish the Draft Release
         run: |
-          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
+          NEW_TAG="v${{ env.VERSION }}"
+          # Update the release title, tag, and make it public
+          gh release edit "$RELEASE_TAG" \
+            --target main \
+            --title "Release $NEW_TAG" \
+            --tag "$NEW_TAG" \
+            --draft=false
 
       - name: Get Version
         run: |
