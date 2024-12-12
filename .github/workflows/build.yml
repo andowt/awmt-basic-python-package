@@ -23,6 +23,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set store to true if source branch is release
+        run: |
+          if [[ "${{ github.event.pull_request.head.ref }}" == "release" ]]; then
+            echo "store=true" >> $GITHUB_ENV  # Set the store input to true if the source branch is release
+          else
+            echo "store=false" >> $GITHUB_ENV  # Keep the default as false otherwise
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -53,10 +61,10 @@ jobs:
           path: dist/  # Assuming poetry build outputs to the 'dist/' directory
 
       - name: Store build log on fail
-        if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        if: ${{ github.event.inputs.store == 'true' || env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
-          name: poetry-build-log
+          name: poetry-build-log-${{ github.event.pull_request.number }}
           path: build_output.log  # Upload the log file only if the build failed
 
       - name: Force workflow failure on build failure
