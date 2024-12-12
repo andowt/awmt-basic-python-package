@@ -34,30 +34,30 @@ jobs:
 
       - name: List releases
         run: |
+          VERSION="${{ env.VERSION }}"
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           gh release list
-          VERSION="${{ env.VERSION }}"
-          gh release download "v$VERSION" --pattern "dist/*" --dir dist/
+          gh release download "v$VERSION" --pattern "*" --dir dist/
 
-      #- name: Install PIP Requirements
-      #  run: |
-      #    pip install twine
+      - name: Install PIP Requirements
+        run: |
+          pip install twine
 
-      #- name: Publish to PyPI
-      #  run: |
-      #    twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish to PyPI
+        run: |
+          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Rename and Publish the Draft Release
         run: |
+          VERSION="${{ env.VERSION }}"
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
-          NEW_TAG="v${{ env.VERSION }}"
           # Update the release title, tag, and make it public
-          gh release edit "$RELEASE_TAG" --prerelease=false
+          gh release edit "v$VERSION" --draft=false
 
       - name: Tag release in main
         run: |
+          VERSION="${{ env.VERSION }}"
           # Create a new Git tag based on the version
-          git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"  
+          git tag -a "v$VERSION" -m "Release version ${{ env.VERSION }}"  
           # Push the tag to the remote repository
-          git push origin "v${{ env.VERSION }}"
+          git push origin "v$VERSION"

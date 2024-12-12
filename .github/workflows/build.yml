@@ -78,7 +78,7 @@ jobs:
             gh release upload "v$VERSION" dist/* --clobber
           else
             echo "Creating new release v$VERSION..."
-            gh release create "v$VERSION" dist/* --notes "Build artifacts for PR #${{ github.event.pull_request.number }}" --title "v$VERSION" --prerelease
+            gh release create "v$VERSION" dist/* --notes "Build artifacts for PR #${{ github.event.pull_request.number }}" --title "v$VERSION" --draft
           fi
 
       - name: Store build log on fail
