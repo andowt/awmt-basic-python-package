@@ -56,19 +56,19 @@ jobs:
           echo "Poetry build completed. Log saved to build_output.log"
         continue-on-error: true
 
-       - name: Store the build artifacts in GitHub Releases if store is true
-        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE == 0 }}
+       - name: Store the build artifacts in GitHub Releases
+        if: ${{ env.STORE == 'true' && env.BUILD_EXIT_CODE == 0 }}
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
-           if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
             echo "Release $RELEASE_TAG already exists. Updating..."
             gh release upload "$RELEASE_TAG" dist/* --clobber
           else
             echo "Creating new release $RELEASE_TAG..."
             gh release create "$RELEASE_TAG" dist/* --draft --notes "Build artifacts for PR #${{ github.event.pull_request.number }}"
           fi
-          
+
       - name: Store build log on fail
         if: ${{ env.STORE == 'true' || env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
