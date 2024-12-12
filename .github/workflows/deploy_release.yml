@@ -32,7 +32,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
-          name: poetry-build-artifacts-${{ github.event.pull_request.number }}  # Ensure this matches the name from build.yml
+          name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}  # Ensure this matches the name from build.yml
           path: dist/  # Path where the artifact will be saved locally
 
       - name: Publish to PyPI
