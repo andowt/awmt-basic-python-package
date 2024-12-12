@@ -44,7 +44,7 @@ jobs:
       - name: Create and switch to release branch
         run: |
           git checkout -b release
-          git push origin release
+          git push --set-upstream origin release
 
       - name: Bump version
         run: |
