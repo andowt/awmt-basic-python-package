@@ -44,8 +44,8 @@ jobs:
       - name: Check if 'release' branch exists
         run: |
           if git ls-remote --exit-code --heads origin release; then
-            echo "Release branch already exists on origin, exiting."
-            exit 1
+            echo "Release branch already exists on origin, deleting."
+            git push origin --delete release  # Delete the remote 'release' branch
           fi
 
       - name: Create and switch to release branch
