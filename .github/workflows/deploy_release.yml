@@ -25,18 +25,30 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-
       - name: Install PIP Requirements
         run: |
           pip install twine
 
-      - name: Build the package
-        run: |
-          poetry build
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: poetry-build-artifacts-${{ github.event.pull_request.number }}  # Ensure this matches the name from build.yml
+          path: dist/  # Path where the artifact will be saved locally
 
       - name: Publish to PyPI
         run: |
           twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Get Version
+        run: |
+          # Capture the bumped version from .bumpversion.cfg
+          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
+          echo "Bumped version is: $bumped_version"
+          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+
+      - name: Tag release in main
+        run: |
+          # Create a new Git tag based on the version
+          git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"  
+          # Push the tag to the remote repository
+          git push origin "v${{ env.VERSION }}"

@@ -1,0 +1,66 @@
+name: build
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual triggering of the workflow
+    inputs:
+    store:
+      description: 'Store build artifacts'
+      required: false
+      default: 'false'
+      type: choice
+      options:
+        - true
+        - false
+
+jobs:
+  run-unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'  # You can change the version as needed
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies using Poetry
+        run: |
+          poetry install  --with dev
+
+      - name: Build the package and capture output
+        run: |
+          # Run poetry build and capture the output into a log file
+          poetry build > build_output.log 2>&1
+          build_exit_code=$?
+          echo "BUILD_EXIT_CODE=$build_exit_code" >> $GITHUB_ENV
+          echo "Poetry build completed. Log saved to build_output.log"
+        continue-on-error: true
+
+      - name: Store the build artifacts if store is true
+        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE == 0}}  # Check if store is true
+        uses: actions/upload-artifact@v4
+        with:
+          name: poetry-build-artifacts-${{ github.event.pull_request.number }}
+          path: dist/  # Assuming poetry build outputs to the 'dist/' directory
+
+      - name: Store build log on fail
+        if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: poetry-build-log
+          path: build_output.log  # Upload the log file only if the build failed
+
+      - name: Force workflow failure on build failure
+        if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        run: |
+          echo "Build failed with exit code ${{ env.BUILD_EXIT_CODE }}. Exiting with error."
+          exit 1  # Force the workflow to fail
