@@ -9,7 +9,7 @@ on:
     if: github.event.pull_request.head.ref == 'release'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
           echo "Bumped version is: $bumped_version"
           echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
 
-      - name: List releases
+      - name: Download Release
         run: |
           VERSION="${{ env.VERSION }}"
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
