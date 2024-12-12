@@ -1,0 +1,42 @@
+name: Deploy Release
+
+on:
+  pull_request:
+    types: [closed]  # Trigger when the PR is closed (merged or closed without merging)
+    branches:
+      - main
+    # Make sure the source branch is 'release'
+    if: github.event.pull_request.head.ref == 'release'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deploy_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install PIP Requirements
+        run: |
+          pip install twine
+
+      - name: Build the package
+        run: |
+          poetry build
+
+      - name: Publish to PyPI
+        run: |
+          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
