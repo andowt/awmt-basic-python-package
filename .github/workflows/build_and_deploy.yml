@@ -53,7 +53,7 @@ jobs:
           path: build_output.log  # Upload the log file only if the build failed
       
       - name: Store build output on pass
-        if: ${{ && env.BUILD_EXIT_CODE == 0 }}  # Check if the build failed
+        if: ${{ env.BUILD_EXIT_CODE == 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
           name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}
