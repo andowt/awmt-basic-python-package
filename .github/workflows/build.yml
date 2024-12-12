@@ -71,7 +71,6 @@ jobs:
         if: ${{ env.STORE == 'true' && env.BUILD_EXIT_CODE == 0 }}
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
           VERSION="${{ env.VERSION }}"
           if gh release view "v$VERSION" > /dev/null 2>&1; then
             echo "Release v$VERSION already exists. Updating..."

@@ -38,6 +38,7 @@ jobs:
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           gh release list
           gh release download "v$VERSION" --pattern "*" --dir dist/
+          gh release edit "v$VERSION" --prerelease=false
 
       - name: Install PIP Requirements
         run: |
@@ -46,13 +47,6 @@ jobs:
       - name: Publish to PyPI
         run: |
           twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
-
-      - name: Rename and Publish the Draft Release
-        run: |
-          VERSION="${{ env.VERSION }}"
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          # Update the release title, tag, and make it public
-          gh release edit "v$VERSION" --prerelease=false
 
       - name: Tag release in main
         run: |
