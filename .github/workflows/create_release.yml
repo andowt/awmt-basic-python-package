@@ -58,6 +58,10 @@ jobs:
           version_type="${{ github.event.inputs.version }}"
           echo "Bumping version by: $version_type"
           bump2version $version_type
+          # Capture the bumped version from .bumpversion.cfg
+          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
+          echo "Bumped version is: $bumped_version"
+          echo "::set-output name=version::$bumped_version"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
@@ -65,6 +69,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
           base: main  # Target branch is main
           branch: release  # Source branch is release
-          title: "Merge release into main"
+          title: "Release - ${{ steps.bump_version.outputs.version }}"
           body: "This pull request merges the release branch into the main branch. This will trigger the deploy workflow"
           draft: false
