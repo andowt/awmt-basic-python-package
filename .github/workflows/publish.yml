@@ -17,7 +17,7 @@ permissions:
   contents: write
 
 jobs:
-  versioning:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
