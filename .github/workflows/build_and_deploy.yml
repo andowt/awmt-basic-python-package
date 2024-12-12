@@ -83,14 +83,13 @@ jobs:
       - name: Install dependencies
         run: |
           pip install twine
-          - name: Get Version
 
       - name: Get Version
-      run: |
-        # Capture the bumped version from .bumpversion.cfg
-        bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
-        echo "Bumped version is: $bumped_version"
-        echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+        run: |
+          # Capture the bumped version from .bumpversion.cfg
+          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
+          echo "Bumped version is: $bumped_version"
+          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
 
       - name: Release to GitHub Releases
         run: |
