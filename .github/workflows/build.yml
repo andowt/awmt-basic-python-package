@@ -57,14 +57,14 @@ jobs:
         if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE == 0}}  # Check if store is true
         uses: actions/upload-artifact@v4
         with:
-          name: poetry-build-artifacts-${{ github.event.pull_request.number }}
+          name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}
           path: dist/  # Assuming poetry build outputs to the 'dist/' directory
 
       - name: Store build log on fail
         if: ${{ github.event.inputs.store == 'true' || env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
-          name: poetry-build-log-${{ github.event.pull_request.number }}
+          name: poetry-build-log-PR${{ github.event.pull_request.number }}
           path: build_output.log  # Upload the log file only if the build failed
 
       - name: Force workflow failure on build failure
