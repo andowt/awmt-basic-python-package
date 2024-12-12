@@ -1,4 +1,4 @@
-name: build
+name: Build
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ on:
         - false
 
 jobs:
-  run-unit-tests:
+    build:
     runs-on: ubuntu-latest
 
     steps:

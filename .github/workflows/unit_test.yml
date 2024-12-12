@@ -1,4 +1,4 @@
-name: unit_test
+name: Unit Test
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  run-unit-tests:
+    unit-test:
     runs-on: ubuntu-latest
 
     steps:
