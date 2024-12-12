@@ -25,6 +25,11 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Set Git user identity (repository-scoped)
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions Bot"
+
       - name: Get Version
         run: |
           # Capture the bumped version from .bumpversion.cfg
