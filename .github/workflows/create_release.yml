@@ -54,6 +54,14 @@ jobs:
           git checkout -b release
           git push --set-upstream origin release
 
+      - name: Verify release branch exists remotely
+        run: |
+          git ls-remote --heads origin release
+          if [[ $? -ne 0 ]]; then
+            echo "Release branch does not exist on the remote."
+            exit 1
+          fi
+
       - name: Instal PIP requirements
         run: |
           pip install bump2version
@@ -66,7 +74,8 @@ jobs:
 
       - name: Push to release branch
         run: |
-          git push --follow-tags origin/release
+          git branch
+          git push --follow-tags
 
       - name: Diff main and release
         run: |
