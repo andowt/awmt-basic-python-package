@@ -25,11 +25,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Get Version
+        run: |
+          # Capture the bumped version from .bumpversion.cfg
+          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
+          echo "Bumped version is: $bumped_version"
+          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+
+      - name: List releases
+        run: |
+          gh release list
+
       - name: Download build artifacts from GitHub Release
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
-          gh release download "$RELEASE_TAG" --pattern "dist/*" --dir dist/
+          VERSION="${{ env.VERSION }}"
+          gh release download "v$VERSION" --pattern "dist/*" --dir dist/
 
       #- name: Install PIP Requirements
       #  run: |
@@ -45,18 +56,7 @@ jobs:
           RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
           NEW_TAG="v${{ env.VERSION }}"
           # Update the release title, tag, and make it public
-          gh release edit "$RELEASE_TAG" \
-            --target main \
-            --title "Release $NEW_TAG" \
-            --tag "$NEW_TAG" \
-            --draft=false
-
-      - name: Get Version
-        run: |
-          # Capture the bumped version from .bumpversion.cfg
-          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
-          echo "Bumped version is: $bumped_version"
-          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+          gh release edit "$RELEASE_TAG" --prerelease=false
 
       - name: Tag release in main
         run: |
