@@ -46,6 +46,10 @@ jobs:
           git checkout -b release
           git push origin release
 
+      - name: Instal PIP requirements
+        run: |
+          pip install bump2version
+
       - name: Bump version
         run: |
           version_type="${{ github.event.inputs.version }}"
