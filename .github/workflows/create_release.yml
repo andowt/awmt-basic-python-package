@@ -65,6 +65,7 @@ jobs:
           bump2version $version_type
 
       - name: Push to release branch
+        run: |
           git push --follow-tags origin/release
 
       - name: Diff main and release
