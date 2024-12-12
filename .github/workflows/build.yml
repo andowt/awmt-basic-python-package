@@ -56,7 +56,7 @@ jobs:
           echo "Poetry build completed. Log saved to build_output.log"
         continue-on-error: true
 
-       - name: Store the build artifacts in GitHub Releases
+      - name: Store the build artifacts in GitHub Releases
         if: ${{ env.STORE == 'true' && env.BUILD_EXIT_CODE == 0 }}
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
