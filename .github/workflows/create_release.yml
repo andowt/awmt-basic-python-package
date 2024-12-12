@@ -65,16 +65,16 @@ jobs:
           git push --follow-tags
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v7
         with:
-          title: Release Version
-          body: This PR includes the bumped version and tag.
-          branch: release
-          base: main
           token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
           commit-message: [create-pull-request] automated change
           committer: GitHub <noreply@github.com>
           author: GitHub Actions Bot <github-actions@github.com>
           signoff: false
+          branch: release
           delete-branch: false
+          base: main
+          title: Release Version
+          body: This PR includes the bumped version and tag.
           draft: false
