@@ -64,11 +64,17 @@ jobs:
           bump2version $version_type
           git push --follow-tags
 
-      - name: Create Pull Request for Release
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          title: "Release Version"
-          body: "This PR includes the bumped version and tag."
-          head: release  # Source branch
-          base: main     # Target branch
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: Release Version
+          body: This PR includes the bumped version and tag.
+          branch: release
+          base: main
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
+          commit-message: [create-pull-request] automated change
+          committer: GitHub <noreply@github.com>
+          author: GitHub Actions Bot <github-actions@github.com>
+          signoff: false
+          delete-branch: false
+          draft: false
