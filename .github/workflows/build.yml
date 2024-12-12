@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      - closed
   workflow_dispatch:  # Allows manual triggering of the workflow
     inputs:
     store:
@@ -27,28 +31,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Determine if store should be true (based on source branch)
-        id: store_condition
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.head.ref }}" == "release" ]]; then
-            echo "STORE=true" >> $GITHUB_ENV  # Set store to true if the source branch is release
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.store }}" == "true" ]]; then
-            echo "STORE=true" >> $GITHUB_ENV  # Use the manually triggered input value
-          else
-            echo "STORE=false" >> $GITHUB_ENV  # Otherwise, set store to false
-          fi
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'  # You can change the version as needed
 
+      - name: Set Git user identity (repository-scoped)
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions Bot"
+
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Install dependencies using Poetry
-        run: |
           poetry install  --with dev
 
       - name: Build the package and capture output
@@ -60,15 +55,44 @@ jobs:
           echo "Poetry build completed. Log saved to build_output.log"
         continue-on-error: true
 
-      - name: Get Version
-        run: |
-          # Capture the bumped version from .bumpversion.cfg
-          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
-          echo "Bumped version is: $bumped_version"
-          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+      - name: Store build log on fail
+        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: poetry-build-log-PR${{ github.event.pull_request.number }}
+          path: build_output.log  # Upload the log file only if the build failed
+      
+      - name: Store build output on pass
+        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE == 0 }}  # Check if the build failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}
+          path: dist/
 
-      - name: Store the build artifacts in GitHub Releases
-        if: ${{ env.STORE == 'true' && env.BUILD_EXIT_CODE == 0 }}
+      - name: Force workflow failure on build failure
+        if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        run: |
+          echo "Build failed with exit code ${{ env.BUILD_EXIT_CODE }}. Exiting with error."
+          exit 1  # Force the workflow to fail
+
+  deploy:
+    needs: build
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'release' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          pip install twine
+          - name: Get Version
+
+      - name: Get Version
+      run: |
+        # Capture the bumped version from .bumpversion.cfg
+        bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
+        echo "Bumped version is: $bumped_version"
+        echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+
+      - name: Release to GitHub Releases
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           VERSION="${{ env.VERSION }}"
@@ -77,18 +101,9 @@ jobs:
             gh release upload "v$VERSION" dist/* --clobber
           else
             echo "Creating new release v$VERSION..."
-            gh release create "v$VERSION" dist/* --notes "Build artifacts for PR #${{ github.event.pull_request.number }}" --title "v$VERSION" --prerelease
+            gh release create "v${{ env.VERSION }}" dist/* --notes "Build artifacts for version ${{ env.VERSION }}" --title "v${{ env.VERSION }}"
           fi
 
-      - name: Store build log on fail
-        if: ${{ env.STORE == 'true' || env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
-        uses: actions/upload-artifact@v4
-        with:
-          name: poetry-build-log-PR${{ github.event.pull_request.number }}
-          path: build_output.log  # Upload the log file only if the build failed
-
-      - name: Force workflow failure on build failure
-        if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+      - name: Publish to PyPI
         run: |
-          echo "Build failed with exit code ${{ env.BUILD_EXIT_CODE }}. Exiting with error."
-          exit 1  # Force the workflow to fail
+          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
