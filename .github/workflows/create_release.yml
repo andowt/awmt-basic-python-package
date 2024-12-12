@@ -53,11 +53,11 @@ jobs:
           bump2version $version_type
           git push --follow-tags
 
-      - name: Raise Pull Request
-        uses: repo-sync/pull-request-action@v2
+      - name: Create Pull Request for Release
+        uses: peter-evans/create-pull-request@v4
         with:
-          source_branch: release
-          target_branch: main
-          pr_title: "Release Version"
-          pr_body: "This PR includes the bumped version and tag."
+          title: "Release Version"
+          body: "This PR includes the bumped version and tag."
+          head: release  # Source branch
+          base: main     # Target branch
           github_token: ${{ secrets.GITHUB_TOKEN }}
