@@ -8,16 +8,6 @@ on:
       - opened
       - synchronize
       - closed
-  workflow_dispatch:  # Allows manual triggering of the workflow
-    inputs:
-    store:
-      description: 'Store build artifacts'
-      required: true
-      default: 'false'
-      type: choice
-      options:
-        - true
-        - false
 
 permissions:
   contents: write
@@ -56,14 +46,14 @@ jobs:
         continue-on-error: true
 
       - name: Store build log on fail
-        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
           name: poetry-build-log-PR${{ github.event.pull_request.number }}
           path: build_output.log  # Upload the log file only if the build failed
       
       - name: Store build output on pass
-        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE == 0 }}  # Check if the build failed
+        if: ${{ && env.BUILD_EXIT_CODE == 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
           name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}
