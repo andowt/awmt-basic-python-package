@@ -74,14 +74,12 @@ jobs:
 
       - name: Push to release branch
         run: |
-          git branch
           git push --follow-tags
 
-      - name: Diff main and release
+      - name: Checkout main
         run: |
-          git fetch origin
-          git diff origin/main..release
-          git push origin release  # Ensure any changes are pushed to remote
+          git checkout main
+          git pull origin main  # Ensure the latest changes from main are fetched
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
