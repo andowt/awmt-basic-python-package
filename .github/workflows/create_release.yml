@@ -63,7 +63,15 @@ jobs:
           version_type="${{ github.event.inputs.version }}"
           echo "Bumping version by: $version_type"
           bump2version $version_type
-          git push --follow-tags
+
+      - name: Push to release branch
+          git push --follow-tags origin/release
+
+      - name: Diff main and release
+        run: |
+          git fetch origin
+          git diff origin/main..release
+          git push origin release  # Ensure any changes are pushed to remote
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
