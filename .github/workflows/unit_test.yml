@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-    unit-test:
+  unit-test:
     runs-on: ubuntu-latest
 
     steps:
