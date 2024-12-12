@@ -68,7 +68,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
-          commit-message: [create-pull-request] automated change
+          commit-message: "[create-pull-request] automated change"
           committer: GitHub <noreply@github.com>
           author: GitHub Actions Bot <github-actions@github.com>
           signoff: false
