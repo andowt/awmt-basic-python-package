@@ -29,6 +29,7 @@ jobs:
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           RELEASE_TAG="pr-${{ github.event.pull_request.number }}"
+          gh release edit "$RELEASE_TAG" --draft=false # Need to make the release non draft to download it
           gh release download "$RELEASE_TAG" --pattern "dist/*" --dir dist/
 
       #- name: Install PIP Requirements

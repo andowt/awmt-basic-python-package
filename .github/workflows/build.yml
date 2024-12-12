@@ -66,7 +66,7 @@ jobs:
             gh release upload "$RELEASE_TAG" dist/* --clobber
           else
             echo "Creating new release $RELEASE_TAG..."
-            gh release create "$RELEASE_TAG" dist/* --draft --notes "Build artifacts for PR #${{ github.event.pull_request.number }}"
+            gh release create "$RELEASE_TAG" dist/* --draft --notes "Build artifacts for PR #${{ github.event.pull_request.number }} -- title "$RELEASE_TAG""
           fi
 
       - name: Store build log on fail
