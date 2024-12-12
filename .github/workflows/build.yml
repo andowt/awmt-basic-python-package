@@ -23,12 +23,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set store to true if source branch is release
+      - name: Determine if store should be true (based on source branch)
+        id: store_condition
         run: |
-          if [[ "${{ github.event.pull_request.head.ref }}" == "release" ]]; then
-            echo "store=true" >> $GITHUB_ENV  # Set the store input to true if the source branch is release
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.head.ref }}" == "release" ]]; then
+            echo "STORE=true" >> $GITHUB_ENV  # Set store to true if the source branch is release
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.store }}" == "true" ]]; then
+            echo "STORE=true" >> $GITHUB_ENV  # Use the manually triggered input value
           else
-            echo "store=false" >> $GITHUB_ENV  # Keep the default as false otherwise
+            echo "STORE=false" >> $GITHUB_ENV  # Otherwise, set store to false
           fi
 
       - name: Set up Python
@@ -54,14 +57,14 @@ jobs:
         continue-on-error: true
 
       - name: Store the build artifacts if store is true
-        if: ${{ github.event.inputs.store == 'true' && env.BUILD_EXIT_CODE == 0}}  # Check if store is true
+        if: ${{ env.STORE == 'true' && env.BUILD_EXIT_CODE == 0}}  # Check if store is true
         uses: actions/upload-artifact@v4
         with:
           name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}
           path: dist/  # Assuming poetry build outputs to the 'dist/' directory
 
       - name: Store build log on fail
-        if: ${{ github.event.inputs.store == 'true' || env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
+        if: ${{ env.STORE == 'true' || env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
           name: poetry-build-log-PR${{ github.event.pull_request.number }}
