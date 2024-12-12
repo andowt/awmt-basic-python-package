@@ -24,6 +24,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check if on main branch
+        run: |
+          if [[ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]]; then
+            echo "This workflow can only run on the 'main' branch."
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -46,6 +53,10 @@ jobs:
           git checkout -b release
           git push --set-upstream origin release
 
+      - name: Instal PIP requirements
+        run: |
+          pip install bump2version
+
       - name: Bump version
         run: |
           version_type="${{ github.event.inputs.version }}"
@@ -53,11 +64,11 @@ jobs:
           bump2version $version_type
           git push --follow-tags
 
-      - name: Raise Pull Request
-        uses: repo-sync/pull-request-action@v2
+      - name: Create Pull Request for Release
+        uses: peter-evans/create-pull-request@v4
         with:
-          source_branch: release
-          target_branch: main
-          pr_title: "Release Version"
-          pr_body: "This PR includes the bumped version and tag."
+          title: "Release Version"
+          body: "This PR includes the bumped version and tag."
+          head: release  # Source branch
+          base: main     # Target branch
           github_token: ${{ secrets.GITHUB_TOKEN }}
