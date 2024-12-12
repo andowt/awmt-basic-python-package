@@ -34,11 +34,8 @@ jobs:
 
       - name: List releases
         run: |
-          gh release list
-
-      - name: Download build artifacts from GitHub Release
-        run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          gh release list
           VERSION="${{ env.VERSION }}"
           gh release download "v$VERSION" --pattern "dist/*" --dir dist/
 
