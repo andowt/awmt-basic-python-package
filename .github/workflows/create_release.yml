@@ -66,7 +66,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Use 'token' instead of 'github_token'
+          token: ${{ secrets.PAT_PUSH_TOKEN }}  # Use 'token' instead of 'github_token'
           base: main  # Target branch is main
           branch: release  # Source branch is release
           title: "Release - ${{ env.VERSION }}"  # Use the environment variable here
