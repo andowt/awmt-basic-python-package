@@ -52,7 +52,7 @@ jobs:
           VERSION="${{ env.VERSION }}"
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           # Update the release title, tag, and make it public
-          gh release edit "v$VERSION" --draft=false
+          gh release edit "v$VERSION" --prerelease=false
 
       - name: Tag release in main
         run: |
