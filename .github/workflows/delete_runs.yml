@@ -1,11 +1,6 @@
 name: Delete Workflow Runs
 
 on:
-  pull_request:
-    branches:
-      - "main" 
-    paths:
-      - ".github/workflows/delete_runs.yml"
   workflow_dispatch: # Trigger manually
 
 permissions:
