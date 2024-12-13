@@ -3,7 +3,16 @@ Template for creating PyPI hosted python packages
 
 This repo is intended to be used as a template for new AWMT python projects 
 
-## Build Tools
+## Release Notes
+
+For detailed release notes see:
+
+[Releases Page](https://github.com/andowt/AWMT_BasicPythonPackage/releases)
+
+
+## Manual Buildling Instructiibs
+
+### Build Tools
 Poetry was selected based on this article suggesting it has the best support and is most widely adopted:
 
 https://www.pyopensci.org/python-package-guide/package-structure-code/python-package-build-tools.html
@@ -16,7 +25,7 @@ Poetry can be installed as documented here:
 
 https://python-poetry.org/docs/#installation
 
-## Unit tests
+### Unit tests
 Pytest has been chosen for unit testing based on its scalability and flexability for different applications - see here for more: https://builtin.com/data-science/pytest-vs-unittest
 
 pytest can be installed using
@@ -25,7 +34,7 @@ pytest can be installed using
 pip install pytest
 ```
 
-## Uploading to PyPI
+### Uploading to PyPI
 Install twine using
 
 ```
