@@ -92,12 +92,19 @@ jobs:
           pip install twine
 
       - name: Generate Release Notes
-        id: generate_release_notes
         run: |
-          VERSION="${{ needs.build.outputs.version }}"
-          git log --pretty=format:'- %s' $(git describe --tags --abbrev=0)..HEAD > dist/release_notes.md
-          echo "Generated release notes for version $VERSION:"
-          cat release_notes.md
+          # Get the last version tag in the format vX.Y.Z
+          LAST_TAG=$(git tag -l "v*" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+
+          if [ -z "$LAST_TAG" ]; then
+            # If no tag is found, use the full commit log
+            echo "No version tag found, using full commit log"
+            git log --pretty=format:'- %s' > dist/release_notes.md
+          else
+            # If a tag is found, generate release notes from the tag
+            echo "Generating release notes from tag $LAST_TAG"
+            git log --pretty=format:'- %s' $LAST_TAG..HEAD > dist/release_notes.md
+          fi
 
       - name: Release to GitHub Releases
         run: |
