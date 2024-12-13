@@ -5,7 +5,7 @@ on:
     branches:
       - "main" 
     paths:
-      - ".github/workflows/test.yml"
+      - ".github/workflows/delete_runs.yml"
   workflow_dispatch: # Trigger manually
 
 permissions:
