@@ -16,14 +16,6 @@ jobs:
   delete-runs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check triggering user
-        id: user-check
-        run: |
-          echo "Triggering user: ${{ github.actor }}"
-          if [ "${{ github.actor }}" != "andowt" ]; then
-            echo "This workflow can only be run by andowt."
-            exit 1
-          fi
       - name: Delete workflow runs
         env:
           REPO: ${{ github.repository }}
