@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "AWMT_BasicPythonPackage"
-version = "0.0.22"
+version = "0.0.23"
 description = "A simple template package"
 authors = ["Andy West"]
 readme = "README.md"
