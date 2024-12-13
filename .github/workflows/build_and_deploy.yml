@@ -106,18 +106,18 @@ jobs:
             git log --pretty=format:'- %s' $LAST_TAG..HEAD > release_notes.md
           fi
 
-    - name: Release to GitHub Releases
-      run: |
-        export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        VERSION="${{ needs.build.outputs.version }}"
-        if gh release view "v$VERSION" > /dev/null 2>&1; then
-          echo "Release v$VERSION already exists. Updating..."
-          gh release upload "v$VERSION" dist/* release_notes.md --clobber
-        else
-          echo "Creating new release v$VERSION..."
-          gh release create "v$VERSION" dist/* --notes "Build artifacts for version $VERSION" --title "v$VERSION"
-          gh release upload "v$VERSION" release_notes.md
-        fi
+      - name: Release to GitHub Releases
+        run: |
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          VERSION="${{ needs.build.outputs.version }}"
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "Release v$VERSION already exists. Updating..."
+            gh release upload "v$VERSION" dist/* release_notes.md --clobber
+          else
+            echo "Creating new release v$VERSION..."
+            gh release create "v$VERSION" dist/* --notes "Build artifacts for version $VERSION" --title "v$VERSION"
+            gh release upload "v$VERSION" release_notes.md
+          fi
 
       - name: Publish to PyPI
         run: |
