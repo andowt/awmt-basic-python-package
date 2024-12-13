@@ -13,6 +13,9 @@ permissions:
   contents: write
   packages: write
 
+env:
+  VERSION: "0.0.0"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,6 +33,14 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions Bot"
+      
+      - name: Get Version
+        run: |
+          # Capture the bumped version from .bumpversion.cfg
+          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
+          echo "Bumped version is: $bumped_version"
+          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
+
 
       - name: Install Poetry
         run: |
@@ -49,14 +60,14 @@ jobs:
         if: ${{ env.BUILD_EXIT_CODE != 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
-          name: poetry-build-log-PR${{ github.event.pull_request.number }}
+          name: poetry-build-log
           path: build_output.log  # Upload the log file only if the build failed
       
       - name: Store build output on pass
         if: ${{ env.BUILD_EXIT_CODE == 0 }}  # Check if the build failed
         uses: actions/upload-artifact@v4
         with:
-          name: poetry-build-artifacts-PR${{ github.event.pull_request.number }}
+          name: poetry-build-artifacts
           path: dist/
 
       - name: Force workflow failure on build failure
@@ -67,19 +78,23 @@ jobs:
 
   deploy:
     needs: build
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'release' }}
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'release' }}
     steps:
+      - name: Sanity Check
+        run: |
+          ls -l
+          echo ${{ env.VERSION }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: poetry-build-artifacts
+          path: dist/
+      
       - name: Install dependencies
         run: |
           pip install twine
-
-      - name: Get Version
-        run: |
-          # Capture the bumped version from .bumpversion.cfg
-          bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
-          echo "Bumped version is: $bumped_version"
-          echo "VERSION=$bumped_version" >> $GITHUB_ENV  # Set the version as an environment variable
 
       - name: Release to GitHub Releases
         run: |
