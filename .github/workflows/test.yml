@@ -24,6 +24,7 @@ jobs:
 
       - name: Generate Release Notes
         run: |
+         git fetch --tags
           # Get the last version tag in the format vX.Y.Z
           LAST_TAG=$(git tag -l "v*" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
           echo "LAST TAG: $LAST_TAG"
