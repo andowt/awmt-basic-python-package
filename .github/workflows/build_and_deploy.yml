@@ -21,8 +21,8 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
 
     steps:
-    
-      - name: Checkout code
+      - &repo_checkout
+        name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -78,6 +78,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'release' }}
     steps:
 
+      - *repo_checkout
+      
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -90,6 +92,7 @@ jobs:
 
       - name: Release to GitHub Releases
         run: |
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           VERSION="${{ needs.build.outputs.version }}"
           if gh release view "v$VERSION" > /dev/null 2>&1; then
             echo "Release v$VERSION already exists. Updating..."
