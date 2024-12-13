@@ -17,9 +17,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-
     steps:
 
       - name: Checkout code
@@ -36,7 +33,7 @@ jobs:
           # Capture the bumped version from .bumpversion.cfg
           bumped_version=$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)
           echo "Bumped version is: $bumped_version"
-          echo "::set-output name=version::$bumped_version"
+          echo "version=$bumped_version" >> $GITHUB_OUTPUT
 
       - name: Install Poetry
         run: |
