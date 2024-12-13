@@ -21,8 +21,8 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
 
     steps:
-      - &repo_checkout
-        name: Checkout code
+
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -78,7 +78,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'release' }}
     steps:
 
-      - *repo_checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
       
       - name: Download build artifacts
         uses: actions/download-artifact@v4
