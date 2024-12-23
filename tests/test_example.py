@@ -1,4 +1,4 @@
-from AWMT_BasicPythonPackage import example
+from awmt.basic_python_package import example
 
 def test_add_one():
     x = example.add_one(0)
