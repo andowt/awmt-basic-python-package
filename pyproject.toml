@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "AWMT_BasicPythonPackage"
+name = "awmt-basic-python-packge"
 version = "0.1.0"
 description = "A simple template package"
 authors = ["Andy West"]
@@ -12,7 +12,7 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers"
 ]
-packages = [{include = "AWMT_BasicPythonPackage"}]
+packages = [{include = "awmt/basic_python_package"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
