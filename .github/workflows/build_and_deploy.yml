@@ -126,15 +126,14 @@ jobs:
           if [ -z "$LAST_TAG" ]; then
             # If no tag is found, use the full commit log
             echo "No version tag found, using full commit log"
-            LOG_OUTPUT = $(git log --pretty=format:'- %s' > release_notes.md)
-            echo "$LOG_OUTPUT"
+            LOG_OUTPUT=$(git log --pretty=format:'- %s' | tee release_notes.md)
           else
             # If a tag is found, generate release notes from the tag
             echo "Generating release notes from tag $LAST_TAG"
-            LOG_OUTPUT = $(git log --pretty=format:'- %s' $LAST_TAG..HEAD)
-            echo "$LOG_OUTPUT"
-            git log --pretty=format:'- %s' $LAST_TAG..HEAD > release_notes.md
+            LOG_OUTPUT=$(git log --pretty=format:'- %s' $LAST_TAG..HEAD | tee release_notes.md)
           fi
+
+          echo "$LOG_OUTPUT"
 
       - name: Deploy release notes to GitHub Releases
         run: |
