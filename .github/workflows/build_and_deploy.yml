@@ -83,17 +83,13 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ 
-      (
-        github.event.pull_request.merged == true &&
-        github.event.pull_request.base.ref == 'main' &&
-        github.event.pull_request.head.ref == 'release'
-      ) ||
-      (
-        github.event.inputs.deploy_after_build &&
-        github.ref == 'refs/heads/main'
-      )
-    }}
+    if: | 
+      (github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.ref == 'release') ||
+      (github.event.inputs.deploy_after_build &&
+      github.ref == 'refs/heads/main')
+
     steps:
 
       - name: Checkout code
