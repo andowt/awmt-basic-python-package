@@ -102,7 +102,7 @@ jobs:
           else
             # If a tag is found, generate release notes from the tag
             echo "Generating release notes from tag $LAST_TAG"
-            run: git log --pretty=format:'- %s' $LAST_TAG..HEAD
+            git log --pretty=format:'- %s' $LAST_TAG..HEAD
             git log --pretty=format:'- %s' $LAST_TAG..HEAD > release_notes.md
           fi
 
