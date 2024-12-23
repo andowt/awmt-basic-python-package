@@ -94,6 +94,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to get full git log for release notes
       
       - name: Download build artifacts
         uses: actions/download-artifact@v4
